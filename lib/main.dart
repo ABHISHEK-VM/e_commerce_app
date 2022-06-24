@@ -1,3 +1,4 @@
+import 'package:ecommerceapp/provider/cart.dart';
 import 'package:flutter/material.dart';
 import './screen/home_page.dart';
 import 'provider/products.dart';
@@ -13,12 +14,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => Products(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: Products(),
+        ),
+        ChangeNotifierProvider.value(
+          value: Cart(),
+        ),
+      ],
       child: MaterialApp(
         title: 'E-commerce App',
         theme: ThemeData(
-            primarySwatch: Colors.blue, secondaryHeaderColor: Colors.amber),
+            primarySwatch: Colors.amber,
+            primaryColor: Colors.amber,
+            secondaryHeaderColor: Colors.amber),
         home: HomePage(),
         routes: {
           ProductDetail.routeName: (context) => const ProductDetail(),

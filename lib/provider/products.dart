@@ -1,4 +1,4 @@
-import 'package:ecommerceapp/model/product.dart';
+import 'package:ecommerceapp/provider/product.dart';
 import 'package:flutter/material.dart';
 
 class Products with ChangeNotifier {
@@ -39,6 +39,14 @@ class Products with ChangeNotifier {
 
   List<Product> get items {
     return [..._items];
+  }
+
+  List<Product> get favorite {
+    return _items.where((proditem) => proditem.isFavorite).toList();
+  }
+
+  Product findById(String id) {
+    return _items.firstWhere((prod) => prod.id == id);
   }
 
   void addProduct() {

@@ -12,18 +12,25 @@ class ProductGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final productsdata = Provider.of<Products>(context);
     final products = productsdata.items;
-    return GridView.builder(
-      itemCount: products.length,
-      itemBuilder: (context, i) => ProductItem(
-        products[i].id,
-        products[i].title,
-        products[i].imgurl,
-      ),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 2 / 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+    print(products);
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: GridView.builder(
+        itemCount: products.length,
+        itemBuilder: (context, i) => ChangeNotifierProvider.value(
+          value: products[i],
+          child: ProductItem(
+              // products[i].id,
+              // products[i].title,
+              // products[i].imgurl,
+              ),
+        ),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 5 / 6,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
       ),
     );
   }
