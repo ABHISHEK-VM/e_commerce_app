@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../provider/cart.dart';
 import '../widget/product_favorite.dart';
 import '../widget/product_grid.dart';
 import 'package:provider/provider.dart';
-import '../provider/products.dart';
 
 import 'package:badges/badges.dart';
 
@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
@@ -86,22 +87,21 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Badge(
-                padding: const EdgeInsets.all(6),
-                badgeContent: const Text(
-                  '5',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white),
-                ),
-                // position: BadgePosition.topEnd(
-                //   top: -4,
-                //   end: -5,
-                // ),
+              padding: const EdgeInsets.all(6),
+              badgeContent: Consumer<Cart>(
+                builder: ((_, cartData, ch) => Text(
+                      cartData.itemCount.toString(),
+                      style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white),
+                    )),
                 child: const Icon(
                   Icons.shopping_cart,
                   size: 26,
-                )),
+                ),
+              ),
+            ),
             label: 'Cart',
           ),
         ],

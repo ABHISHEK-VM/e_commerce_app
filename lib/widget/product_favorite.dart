@@ -9,8 +9,8 @@ class ProductFavorite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productscontainer = Provider.of<Products>(context);
-    final products = productscontainer.favorite;
+    final productsContainer = Provider.of<Products>(context);
+    final products = productsContainer.favorite;
     // print(productscontainer.showFavorite());
 
     return showFavs
@@ -20,11 +20,7 @@ class ProductFavorite extends StatelessWidget {
               itemCount: products.length,
               itemBuilder: (context, i) => ChangeNotifierProvider.value(
                 value: products[i],
-                child: ProductItem(
-                    // products[i].id,
-                    // products[i].title,
-                    // products[i].imgurl,
-                    ),
+                child: const ProductItem(),
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,

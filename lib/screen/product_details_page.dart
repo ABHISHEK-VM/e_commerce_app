@@ -37,7 +37,10 @@ class ProductDetail extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: [
+
+
                     // CachedNetworkImage(
+
                     //   fit: BoxFit.cover,
                     //   imageBuilder: (context, imageProvider) => Container(
                     //     height: MediaQuery.of(context).size.height * .28,
@@ -55,6 +58,7 @@ class ProductDetail extends StatelessWidget {
                     //               value: downloadProgress.progress),
                     //   errorWidget: (context, url, error) =>
                     //       const Icon(Icons.error),
+                    
                     // ),
 
                     Container(
