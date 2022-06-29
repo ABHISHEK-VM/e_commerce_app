@@ -1,3 +1,4 @@
+import 'package:ecommerceapp/widget/reusables.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/cart.dart';
@@ -37,8 +38,6 @@ class ProductDetail extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: [
-
-
                     // CachedNetworkImage(
 
                     //   fit: BoxFit.cover,
@@ -58,7 +57,7 @@ class ProductDetail extends StatelessWidget {
                     //               value: downloadProgress.progress),
                     //   errorWidget: (context, url, error) =>
                     //       const Icon(Icons.error),
-                    
+
                     // ),
 
                     Container(
@@ -143,7 +142,10 @@ class ProductDetail extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   cart.addItem(loadedProduct.id, loadedProduct.price,
-                      loadedProduct.title);
+                      loadedProduct.title, loadedProduct.imgurl);
+
+                  displaySnackBar(
+                      context: context, text: 'Product added to Cart...');
                 },
                 child: const Text('Add to Cart'),
               ),

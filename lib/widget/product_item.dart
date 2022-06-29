@@ -8,12 +8,6 @@ import 'package:provider/provider.dart';
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key}) : super(key: key);
 
-  // final String id;
-  // final String title;
-  // final String imgurl;
-
-  // ProductItem(this.id, this.title, this.imgurl);
-
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);

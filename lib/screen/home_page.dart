@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 
 import 'package:badges/badges.dart';
 
+import 'cart_page.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
@@ -22,10 +24,7 @@ class _HomePageState extends State<HomePage> {
   static const List<Widget> _widgetOptions = <Widget>[
     ProductGrid(),
     ProductFavorite(true),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    CartPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -54,7 +53,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              title: const Text('Cart'),
+              title: const Text('Add Inventory'),
               onTap: () {
                 Navigator.pop(context);
               },

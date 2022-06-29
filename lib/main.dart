@@ -1,4 +1,5 @@
 import 'package:ecommerceapp/provider/cart.dart';
+import 'package:ecommerceapp/screen/cart_page.dart';
 import 'package:flutter/material.dart';
 import './screen/home_page.dart';
 import 'provider/products.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         home: HomePage(),
         routes: {
           ProductDetail.routeName: (context) => const ProductDetail(),
+          CartPage.routeName: (context) => const CartPage(),
         },
       ),
     );
