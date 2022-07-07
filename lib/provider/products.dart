@@ -1,41 +1,36 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerceapp/provider/product.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class Products with ChangeNotifier {
-  // ignore: prefer_final_fields
-  List<Product> _items = [
-    Product(
-      id: 'p1',
-      title: 'Red Shirt',
-      description: 'A red shirt - it is pretty red!',
-      price: 29.99,
-      imgurl:
-          'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    ),
-    Product(
-      id: 'p2',
-      title: 'Trousers',
-      description: 'A nice pair of trousers.',
-      price: 59.99,
-      imgurl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
-    ),
-    Product(
-      id: 'p3',
-      title: 'Yellow Scarf',
-      description: 'Warm and cozy - exactly what you need for the winter.',
-      price: 19.99,
-      imgurl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-    ),
-    Product(
-      id: 'p4',
-      title: 'A Pan',
-      description: 'Prepare any meal you want.',
-      price: 49.99,
-      imgurl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
-  ];
+  final _cloud = FirebaseFirestore.instance;
+  final _storage = FirebaseStorage.instance;
+
+  List<Product> _items = [];
+  late Product product;
+
+  Future<void> getInventory() async {
+    List<Product> _newitems = [];
+    QuerySnapshot value = await _cloud.collection("inventory").get();
+
+    value.docs.forEach((element) {
+      var product = Product(
+        id: element.get("id"),
+        imgurl: element.get("imageurl"),
+        title: element.get("title"),
+        description: element.get("description"),
+        price: element.get("price"),
+      );
+
+      _newitems.add(product);
+    });
+
+    _items = _newitems;
+    print('new items : ${_newitems}');
+    //print(' items id: ${_newitems.id}');
+    notifyListeners();
+  }
 
   List<Product> get items {
     return [..._items];
@@ -45,12 +40,21 @@ class Products with ChangeNotifier {
     return _items.where((proditem) => proditem.isFavorite).toList();
   }
 
+  // returnId() {
+  //   _cloud.collection("inventory").get().then((QuerySnapshot querySnapshot) {
+  //     querySnapshot.docs.forEach((doc) {
+  //       return doc.id;
+  //     });
+  //   });
+  // }
+
   Product findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  void addProduct() {
-    // _items.add(value);
-    notifyListeners();
-  }
+  //void addProduct() {
+  // _items.add(value);
+  // notifyListeners();
+  //}
+
 }

@@ -1,3 +1,6 @@
+import 'package:ecommerceapp/provider/products.dart';
+import 'package:ecommerceapp/screen/edit_account_page.dart';
+import 'package:ecommerceapp/screen/inventory_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -18,8 +21,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  // static const TextStyle optionStyle =
+  //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   static const List<Widget> _widgetOptions = <Widget>[
     ProductGrid(),
@@ -31,6 +34,13 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    Products productsdata = Provider.of(context, listen: false);
+    productsdata.getInventory();
+    super.initState();
   }
 
   @override
@@ -50,12 +60,19 @@ class _HomePageState extends State<HomePage> {
               title: const Text('Account'),
               onTap: () {
                 Navigator.pop(context);
+
+                Navigator.of(context).pushNamed(
+                  EditAccountPage.routeName,
+                );
               },
             ),
             ListTile(
               title: const Text('Add Inventory'),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.of(context).pushNamed(
+                  InventoryPage.routeName,
+                );
               },
             ),
             ListTile(

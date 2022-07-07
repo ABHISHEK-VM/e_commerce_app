@@ -12,12 +12,12 @@ class ProductDetail extends StatelessWidget {
   static const routeName = '/product_details_page';
   @override
   Widget build(BuildContext context) {
-    final productId = ModalRoute.of(context)?.settings.arguments as String;
+    final productId = ModalRoute.of(context)?.settings.arguments as String?;
 
     final cart = Provider.of<Cart>(context, listen: false);
 
     final loadedProduct =
-        Provider.of<Products>(context, listen: false).findById(productId);
+        Provider.of<Products>(context, listen: false).findById(productId!);
     return Scaffold(
       appBar: AppBar(
           title: Text(
@@ -141,7 +141,7 @@ class ProductDetail extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  cart.addItem(loadedProduct.id, loadedProduct.price,
+                  cart.addItem(loadedProduct.id!, loadedProduct.price,
                       loadedProduct.title, loadedProduct.imgurl);
 
                   displaySnackBar(
