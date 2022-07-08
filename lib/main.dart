@@ -1,6 +1,7 @@
 import 'package:ecommerceapp/provider/cart.dart';
 import 'package:ecommerceapp/provider/inventory.dart';
 import 'package:ecommerceapp/provider/order.dart';
+import 'package:ecommerceapp/screen/account_page.dart';
 import 'package:ecommerceapp/screen/cart_page.dart';
 import 'package:ecommerceapp/screen/edit_account_page.dart';
 import 'package:ecommerceapp/screen/inventory_page.dart';
@@ -8,7 +9,7 @@ import 'package:ecommerceapp/screen/order_details_page.dart';
 import 'package:ecommerceapp/screen/sign_in_page.dart';
 import 'package:ecommerceapp/screen/sign_up_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+
 import './screen/home_page.dart';
 import 'provider/products.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +56,8 @@ class MyApp extends StatelessWidget {
           ProductDetail.routeName: (context) => const ProductDetail(),
           CartPage.routeName: (context) => const CartPage(),
           InventoryPage.routeName: (context) => const InventoryPage(),
-          OrderDetailsPage.routeName: (context) => const OrderDetailsPage(),
+          OrderDetailsPage.routeName: (context) => OrderDetailsPage(),
+          AccountPage.routeName: (context) => const AccountPage(),
           EditAccountPage.routeName: (context) => const EditAccountPage()
         },
       ),

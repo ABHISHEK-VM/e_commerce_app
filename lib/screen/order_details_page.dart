@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
 class OrderDetailsPage extends StatelessWidget {
-  const OrderDetailsPage({Key? key}) : super(key: key);
+  var _razorpay = Razorpay();
+
+  OrderDetailsPage({Key? key}) : super(key: key);
 
   static const routeName = '/order_details_page';
 
@@ -225,7 +227,23 @@ class OrderDetailsPage extends StatelessWidget {
                   ],
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    var options = {
+                      'key': 'rzp_test_uHjn0TzjoHBXwE',
+                      'amount': 50000, //in the smallest currency sub-unit.
+                      'name': 'Acme Corp.',
+                      'order_id':
+                          'order_EMBFqjDHEEn80l', // Generate order_id using Orders API
+                      'description': 'Fine T-Shirt',
+                      'timeout': 60, // in seconds
+                      'prefill': {
+                        'contact': '9123456789',
+                        'email': 'gaurav.kumar@example.com'
+                      }
+                    };
+
+                    _razorpay.open(options);
+                  },
                   child: Container(
                     decoration: const BoxDecoration(
                         color: Colors.white,

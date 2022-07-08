@@ -12,6 +12,7 @@ class CartPage extends StatelessWidget {
   const CartPage({Key? key}) : super(key: key);
 
   static const routeName = '/cart_page';
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);

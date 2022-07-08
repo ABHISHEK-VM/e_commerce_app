@@ -1,8 +1,9 @@
 import 'package:ecommerceapp/provider/products.dart';
-import 'package:ecommerceapp/screen/edit_account_page.dart';
+import 'package:ecommerceapp/screen/account_page.dart';
 import 'package:ecommerceapp/screen/inventory_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../provider/cart.dart';
 import '../widget/product_favorite.dart';
@@ -13,6 +14,9 @@ import 'package:badges/badges.dart';
 
 import 'cart_page.dart';
 
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
@@ -21,8 +25,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  // static const TextStyle optionStyle =
-  //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  var _razorpay = Razorpay();
 
   static const List<Widget> _widgetOptions = <Widget>[
     ProductGrid(),
@@ -38,9 +41,37 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+
     Products productsdata = Provider.of(context, listen: false);
     productsdata.getInventory();
     super.initState();
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    // final key = utf8.encode('rzp_test_uHjn0TzjoHBXwE');
+    // final bytes = utf8.encode('$orderId|${response.paymentId}');
+
+    // final hmacSha256 = Hmac(sha256, key);
+    // final Digest generatedSignature = hmacSha256.convert(bytes);
+
+    // if (generatedSignature.toString() == response.signature) {
+    //   print("Payment was successful!");
+    //   //Proceed further to handle events for a successful payment.
+    // } else {
+    //   print("Payment was unauthentic!");
+    // }
+    print("Payment Done");
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    print("Payment Failed");
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    // Do something when an external wallet is selected
   }
 
   @override
@@ -62,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
 
                 Navigator.of(context).pushNamed(
-                  EditAccountPage.routeName,
+                  AccountPage.routeName,
                 );
               },
             ),
@@ -126,5 +157,11 @@ class _HomePageState extends State<HomePage> {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _razorpay.clear();
+    super.dispose();
   }
 }

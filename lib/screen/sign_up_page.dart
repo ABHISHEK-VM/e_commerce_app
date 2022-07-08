@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerceapp/provider/sign_up_provider.dart';
 import 'package:ecommerceapp/screen/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,6 +29,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       phone: _phoneTextController.text,
       context: context,
     );
+    var docid = FirebaseFirestore.instance.collection("userdata").doc();
+    Map<String, dynamic> userdata = {
+      "name": _userNameTextController.text,
+      "email": _emailTextController.text,
+      "address": _addressTextController.text,
+      "phone": _phoneTextController.text,
+      "id": docid.id,
+    };
+    FirebaseFirestore.instance.collection("userdata").add(userdata);
   }
 
   @override
