@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import './product_item.dart';
 import '../provider/products.dart';
@@ -13,7 +14,7 @@ class ProductFavorite extends StatelessWidget {
     final products = productsContainer.favorite;
     // print(productscontainer.showFavorite());
 
-    return showFavs
+    return products.isNotEmpty
         ? Padding(
             padding: const EdgeInsets.all(8),
             child: GridView.builder(
@@ -30,6 +31,14 @@ class ProductFavorite extends StatelessWidget {
               ),
             ),
           )
-        : Container();
+        : Center(
+            child: Text(
+              'No items to display...',
+              style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.grey),
+            ),
+          );
   }
 }

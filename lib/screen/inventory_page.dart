@@ -161,16 +161,34 @@ class _InventoryPageState extends State<InventoryPage> {
     //  final inventory = Provider.of<InventoryProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color.fromARGB(255, 3, 0, 14),
+                  Color.fromARGB(255, 2, 32, 57),
+                  Color.fromARGB(255, 6, 63, 109),
+                  Color.fromARGB(255, 19, 109, 182),
+                  Colors.blue
+                ]),
+          ),
+        ),
         title: Text(
           "Inventory",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 19),
+          style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600, fontSize: 19, color: Colors.white),
         ),
       ),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(30),
             child: Column(
               children: [
                 InkWell(
@@ -207,86 +225,107 @@ class _InventoryPageState extends State<InventoryPage> {
                           ),
                         ),
                 ),
-                Text(
-                  'Title',
-                  style: GoogleFonts.roboto(fontSize: 15, color: Colors.grey),
-                ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
+                  height: MediaQuery.of(context).size.height * 0.035,
                 ),
-                TextFormField(
-                  controller: _title,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.all(15.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Title',
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.015,
+                      ),
+                      TextFormField(
+                        controller: _title,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(15.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                        ),
+                        validator: (val) {
+                          if (val!.trim().length < 2) {
+                            return 'Enter a valid Title';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.015,
+                      ),
+                      Text(
+                        'Description',
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.015,
+                      ),
+                      TextFormField(
+                        controller: _description,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(15.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                        ),
+                        validator: (val) {
+                          if (val!.trim().length < 2) {
+                            return 'Tell something abt the product';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.015,
+                      ),
+                      Text(
+                        'Price',
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.015,
+                      ),
+                      TextFormField(
+                        controller: _price,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(15.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                        ),
+                        validator: (val) {
+                          if (val!.trim().length < 2) {
+                            return 'Enter a valid Title';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                    ],
                   ),
-                  validator: (val) {
-                    if (val!.trim().length < 2) {
-                      return 'Enter a valid Title';
-                    } else {
-                      return null;
-                    }
-                  },
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
-                ),
-                Text(
-                  'Description',
-                  style: GoogleFonts.roboto(fontSize: 15, color: Colors.grey),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
-                ),
-                TextFormField(
-                  controller: _description,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.all(15.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                  ),
-                  validator: (val) {
-                    if (val!.trim().length < 2) {
-                      return 'Tell something abt the product';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
-                ),
-                Text(
-                  'Price',
-                  style: GoogleFonts.roboto(fontSize: 15, color: Colors.grey),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
-                ),
-                TextFormField(
-                  controller: _price,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.all(15.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                  ),
-                  validator: (val) {
-                    if (val!.trim().length < 2) {
-                      return 'Enter a valid Title';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
+                  height: MediaQuery.of(context).size.height * 0.035,
                 ),
                 InkWell(
                   onTap: () {
@@ -299,19 +338,27 @@ class _InventoryPageState extends State<InventoryPage> {
                   },
                   child: Container(
                     decoration: const BoxDecoration(
-                        color: Colors.white,
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: <Color>[
+                              Color.fromARGB(255, 9, 50, 85),
+                              Color.fromARGB(255, 19, 109, 182),
+                              Colors.blue
+                            ]),
+
                         // border: Border.all(
                         //     // color: Colors.amberAccent,
                         //     ),
                         borderRadius: BorderRadius.all(Radius.circular(40))),
                     padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 16),
+                        vertical: 10, horizontal: 56),
                     child: Text(
                       'Save',
                       style: GoogleFonts.poppins(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                      ),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
                     ),
                   ),
                 ),

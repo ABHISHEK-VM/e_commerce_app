@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:ecommerceapp/provider/products.dart';
 import 'package:ecommerceapp/screen/account_page.dart';
 import 'package:ecommerceapp/screen/inventory_page.dart';
@@ -77,17 +79,36 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 232, 237, 247),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.amber,
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: <Color>[
+                      Color.fromARGB(255, 3, 0, 14),
+                      Color.fromARGB(255, 2, 32, 57),
+                      Color.fromARGB(255, 6, 63, 109),
+                      Color.fromARGB(255, 17, 107, 181),
+                      Colors.blue
+                    ]),
               ),
-              child: Text('Drawer Header'),
+              child: Text(
+                'Welcome',
+                style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 26),
+              ),
             ),
             ListTile(
+              leading: const Icon(
+                Icons.account_circle_outlined,
+              ),
               title: const Text('Account'),
               onTap: () {
                 Navigator.pop(context);
@@ -97,7 +118,9 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+            const Divider(),
             ListTile(
+              leading: const Icon(Icons.inventory_2_outlined),
               title: const Text('Add Inventory'),
               onTap: () {
                 Navigator.pop(context);
@@ -106,7 +129,9 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+            const Divider(),
             ListTile(
+              leading: const Icon(Icons.shopping_bag_outlined),
               title: const Text('My Orders'),
               onTap: () {
                 Navigator.pop(context);
@@ -116,9 +141,27 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color.fromARGB(255, 3, 0, 14),
+                  Color.fromARGB(255, 2, 32, 57),
+                  Color.fromARGB(255, 6, 63, 109),
+                  Color.fromARGB(255, 19, 109, 182),
+                  Colors.blue
+                ]),
+          ),
+        ),
         title: Text(
           'E-Commerce App',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 19),
+          style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600, fontSize: 19, color: Colors.white),
         ),
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
@@ -143,17 +186,17 @@ class _HomePageState extends State<HomePage> {
                           fontWeight: FontWeight.w900,
                           color: Colors.white),
                     )),
-                child: const Icon(
-                  Icons.shopping_cart,
-                  size: 26,
-                ),
+              ),
+              child: const Icon(
+                Icons.shopping_cart,
+                size: 26,
               ),
             ),
             label: 'Cart',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[600],
+        selectedItemColor: Color.fromARGB(255, 7, 104, 250),
         onTap: _onItemTapped,
       ),
     );

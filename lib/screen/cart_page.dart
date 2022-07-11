@@ -40,7 +40,7 @@ class CartPage extends StatelessWidget {
             color: Colors.amber,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,6 +58,7 @@ class CartPage extends StatelessWidget {
                   ],
                 ),
                 InkWell(
+                  hoverColor: Colors.red,
                   onTap: () {
                     if (cart.items.isNotEmpty) {
                       Provider.of<Orders>(context, listen: false).addOrder(

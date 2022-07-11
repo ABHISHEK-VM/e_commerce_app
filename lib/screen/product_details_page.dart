@@ -139,20 +139,70 @@ class ProductDetail extends StatelessWidget {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.015,
               ),
-              ElevatedButton(
-                onPressed: () {
+              InkWell(
+                onTap: () {
                   cart.addItem(loadedProduct.id!, loadedProduct.price,
                       loadedProduct.title, loadedProduct.imgurl);
 
                   displaySnackBar(
                       context: context, text: 'Product added to Cart...');
                 },
-                child: const Text('Add to Cart'),
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 300,
+                  height: 54,
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: <Color>[
+                            Color.fromARGB(255, 9, 50, 85),
+                            Color.fromARGB(255, 19, 109, 182),
+                            Colors.blue
+                          ]),
+                      borderRadius: BorderRadius.all(Radius.circular(40))),
+                  // padding:
+                  //     const EdgeInsets.symmetric(vertical: 13, horizontal: 100),
+                  child: Text(
+                    'Buy Now',
+                    style: GoogleFonts.poppins(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
+                  ),
+                ),
               ),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Buy Now'),
-              )
+              SizedBox(
+                height: 15,
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                    alignment: Alignment.center,
+                    width: 300,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.blue,
+                        width: 2.5,
+                      ),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(40),
+                      ),
+                    ),
+                    child: Container(
+                      child: Text(
+                        'Add to Cart',
+                        style: GoogleFonts.poppins(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black),
+                      ),
+                    )),
+              ),
             ],
           ),
         ),

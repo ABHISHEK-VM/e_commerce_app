@@ -15,7 +15,7 @@ class ProductItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(10.0),
       child: GridTile(
         footer: GridTileBar(
-          backgroundColor: Colors.black.withOpacity(0.7),
+          backgroundColor: Colors.white,
           trailing: Consumer<Product>(
             builder: (context, value, _) => IconButton(
               icon: Icon(
@@ -37,10 +37,12 @@ class ProductItem extends StatelessWidget {
                       Text(
                         product.title,
                         style: GoogleFonts.poppins(
-                            fontSize: 15, fontWeight: FontWeight.w700),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black),
                       ),
                       Text(
-                        '₹ ${product.price.toString()}',
+                        '₹ ${product.price.toStringAsFixed(2)}',
                         style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: Colors.amber,

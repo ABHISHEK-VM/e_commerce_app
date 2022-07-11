@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/account_provider.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -14,6 +17,8 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
+    final details = Provider.of<AccountProvider>(context);
+    final datas = details.datas;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -55,7 +60,7 @@ class _AccountPageState extends State<AccountPage> {
                         Flexible(
                           fit: FlexFit.loose,
                           child: Text(
-                            " provider.appUser!.id!",
+                            datas.first.name,
                             softWrap: true,
                             overflow: TextOverflow.visible,
                             style: GoogleFonts.roboto(
