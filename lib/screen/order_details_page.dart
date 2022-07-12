@@ -1,7 +1,16 @@
+import 'package:ecommerceapp/widget/reusables.dart';
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'home_page.dart';
+
+import 'dart:ui';
+import 'dart:convert';
+import 'dart:io';
+
+import '../razor_credentials.dart' as razor_credentials;
+import 'package:http/http.dart' as http;
 
 class OrderDetailsPage extends StatelessWidget {
   var _razorpay = Razorpay();
@@ -9,6 +18,84 @@ class OrderDetailsPage extends StatelessWidget {
   OrderDetailsPage({Key? key}) : super(key: key);
 
   static const routeName = '/order_details_page';
+
+  // create order
+  void createOrder() async {
+    String username = razor_credentials.keyId;
+    String password = razor_credentials.keySecret;
+    String basicAuth =
+        'Basic ${base64Encode(utf8.encode('$username:$password'))}';
+
+    Map<String, dynamic> body = {
+      "amount": 100,
+      "currency": "INR",
+      "receipt": "rcptid_11"
+    };
+    var res = await http.post(
+      Uri.https(
+          "api.razorpay.com", "v1/orders"), //https://api.razorpay.com/v1/orders
+      headers: <String, String>{
+        "Content-Type": "application/json",
+        'authorization': basicAuth,
+      },
+      body: jsonEncode(body),
+    );
+
+    if (res.statusCode == 200) {
+      openGateway(jsonDecode(res.body)['id']);
+    }
+    print(res.body);
+  }
+
+  openGateway(String orderId) {
+    var options = {
+      'key': razor_credentials.keyId,
+      'amount': 100, //in the smallest currency sub-unit.
+      'name': 'Acme Corp.',
+      'order_id': orderId, // Generate order_id using Orders API
+      'description': 'Fine T-Shirt',
+      'timeout': 60 * 5, // in seconds // 5 minutes
+      'prefill': {
+        'contact': '9123456789',
+        'email': 'ary@example.com',
+      }
+    };
+    _razorpay.open(options);
+  }
+
+  verifySignature({
+    String? signature,
+    String? paymentId,
+    String? orderId,
+  }) async {
+    Map<String, dynamic> body = {
+      'razorpay_signature': signature,
+      'razorpay_payment_id': paymentId,
+      'razorpay_order_id': orderId,
+    };
+
+    var parts = [];
+    body.forEach((key, value) {
+      parts.add('${Uri.encodeQueryComponent(key)}='
+          '${Uri.encodeQueryComponent(value)}');
+    });
+    var formData = parts.join('&');
+    var res = await http.post(
+      Uri.https(
+        "10.0.2.2", // my ip address , localhost
+        "razorpay_signature_verify.php",
+      ),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded", // urlencoded
+      },
+      body: formData,
+    );
+
+    print(res.body);
+    if (res.statusCode == 200) {
+      displaySnackBar(text: res.body);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,21 +315,7 @@ class OrderDetailsPage extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    var options = {
-                      'key': 'rzp_test_uHjn0TzjoHBXwE',
-                      'amount': 50000, //in the smallest currency sub-unit.
-                      'name': 'Acme Corp.',
-                      'order_id':
-                          'order_EMBFqjDHEEn80l', // Generate order_id using Orders API
-                      'description': 'Fine T-Shirt',
-                      'timeout': 60, // in seconds
-                      'prefill': {
-                        'contact': '9123456789',
-                        'email': 'gaurav.kumar@example.com'
-                      }
-                    };
-
-                    _razorpay.open(options);
+                    createOrder();
                   },
                   child: Container(
                     decoration: const BoxDecoration(

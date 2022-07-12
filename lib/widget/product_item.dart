@@ -15,14 +15,14 @@ class ProductItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(10.0),
       child: GridTile(
         footer: GridTileBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Color.fromARGB(255, 255, 255, 255),
           trailing: Consumer<Product>(
             builder: (context, value, _) => IconButton(
               icon: Icon(
                 product.isFavorite
                     ? Icons.favorite
                     : Icons.favorite_border_outlined,
-                color: Colors.amber,
+                color: Color.fromARGB(255, 7, 112, 199),
               ),
               onPressed: () {
                 product.toggleFavorite();
@@ -39,13 +39,13 @@ class ProductItem extends StatelessWidget {
                         style: GoogleFonts.poppins(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: Colors.black),
+                            color: Color.fromARGB(255, 0, 5, 18)),
                       ),
                       Text(
                         '₹ ${product.price.toStringAsFixed(2)}',
                         style: GoogleFonts.poppins(
                             fontSize: 12,
-                            color: Colors.amber,
+                            color: Color.fromARGB(255, 7, 112, 199),
                             fontWeight: FontWeight.w600),
                       ),
                     ],

@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:ecommerceapp/provider/products.dart';
 import 'package:ecommerceapp/screen/account_page.dart';
@@ -16,8 +18,8 @@ import 'package:badges/badges.dart';
 
 import 'cart_page.dart';
 
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
+import '../razor_credentials.dart' as razor_credentials;
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   @override
@@ -43,6 +45,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
@@ -53,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    // final key = utf8.encode('rzp_test_uHjn0TzjoHBXwE');
+    // final key = utf8.encode('rzp_test_ksf2yoBKbNmFu3');
     // final bytes = utf8.encode('$orderId|${response.paymentId}');
 
     // final hmacSha256 = Hmac(sha256, key);
@@ -79,7 +82,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 232, 237, 247),
+      backgroundColor: const Color.fromARGB(240, 247, 253, 255),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -159,13 +162,16 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         title: Text(
-          'E-Commerce App',
+          'GADSKart',
           style: GoogleFonts.poppins(
               fontWeight: FontWeight.w600, fontSize: 19, color: Colors.white),
         ),
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 70,
+
+        // backgroundColor: Color.fromARGB(255, 2, 81, 149),
         items: <BottomNavigationBarItem>[
           const BottomNavigationBarItem(
             icon: Icon(Icons.home),

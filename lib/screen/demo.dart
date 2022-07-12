@@ -1,221 +1,199 @@
-// import 'dart:io';
+import 'dart:convert';
+import 'dart:io';
 
-// import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:path/path.dart' as path;
-// import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:http/http.dart' as http;
+import '../razor_credentials.dart' as razorCredentials;
 
-// import '../utilities/enum_helper.dart';
+void main() {
+  HttpOverrides.global = MyHttpOverrides();
 
-// class AppUser {
-//   String? id;
-//   String name;
-//   String mobileNumber;
-//   String role;
-//   String facebook;
-//   String instagram;
-//   String twitter;
-//   String imageID;
-//   String imageURL;
+  runApp(const MyApp());
+}
 
-//   AppUser({
-//     this.id,
-//     required this.name,
-//     required this.mobileNumber,
-//     required this.role,
-//     required this.facebook,
-//     required this.instagram,
-//     required this.twitter,
-//     required this.imageID,
-//     required this.imageURL,
-//   });
-// }
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-// class AppUserProvider with ChangeNotifier {
-//   final _cloud = FirebaseFirestore.instance;
-//   final _storage = FirebaseStorage.instance;
-//   AppUser? _appUser;
-//   List<Map<String, dynamic>> _emails = [];
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Razorpay Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MyHomePage(),
+    );
+  }
+}
 
-//   AppUser? get appUser {
-//     return _appUser;
-//   }
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
-//   List<Map<String, dynamic>> get emails {
-//     return _emails;
-//   }
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-//   Future<ProviderResponse> getUser(String mobileNumber) async {
-//     try {
-//       final result = await _cloud
-//           .collection('user')
-//           .where('mobileNumber', isEqualTo: mobileNumber)
-//           .get();
-//       final data = result.docs.first.data();
-//       _appUser = AppUser(
-//         facebook: data["facebook"],
-//         imageID: data["imageID"],
-//         imageURL: data["imageURL"],
-//         instagram: data["instagram"],
-//         role: data["role"],
-//         twitter: data["twitter"],
-//         id: result.docs.first.id,
-//         mobileNumber: data["mobileNumber"],
-//         name: data["name"],
-//       );
-//       notifyListeners();
-//       return ProviderResponse.success;
-//     } catch (e) {
-//       await Sentry.captureException(e);
-//       return ProviderResponse.error;
-//     }
-//   }
+class _MyHomePageState extends State<MyHomePage> {
+  final _razorpay = Razorpay();
 
-//   Future<ProviderResponse> checkUser(
-//       {required String mobileNumber, required bool isLogin}) async {
-//     try {
-//       final result = await _cloud
-//           .collection('user')
-//           .where('mobileNumber', isEqualTo: mobileNumber)
-//           .get();
-//       if (result.docs.isNotEmpty) {
-//         if (isLogin) {
-//           final data = result.docs.first.data();
-//           _appUser = AppUser(
-//             facebook: data["facebook"],
-//             imageID: data["imageID"],
-//             imageURL: data["imageURL"],
-//             instagram: data["instagram"],
-//             role: data["role"],
-//             twitter: data["twitter"],
-//             id: result.docs.first.id,
-//             mobileNumber: data["mobileNumber"],
-//             name: data["name"],
-//           );
-//         }
-//         notifyListeners();
-//         return ProviderResponse.userExists;
-//       } else {
-//         return ProviderResponse.userDoesnotExist;
-//       }
-//     } catch (e) {
-//       await Sentry.captureException(e);
-//       return ProviderResponse.error;
-//     }
-//   }
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+      _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+      _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    });
+    super.initState();
+  }
 
-//   Future<ProviderResponse> registerUser(AppUser appUser) async {
-//     try {
-//       final data = {
-//         "name": appUser.name,
-//         "facebook": appUser.facebook,
-//         "imageID": appUser.imageID,
-//         "imageURL": appUser.imageURL,
-//         "instagram": appUser.instagram,
-//         "mobileNumber": appUser.mobileNumber,
-//         "role": appUser.role,
-//         "twitter": appUser.twitter,
-//       };
-//       final responseData = await _cloud.collection('user').add(data);
-//       appUser.id = responseData.id;
-//       _appUser = appUser;
-//       return ProviderResponse.success;
-//     } catch (e) {
-//       await Sentry.captureException(e);
-//       return ProviderResponse.error;
-//     }
-//   }
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    // Do something when payment succeeds
+    print(response);
+    verifySignature(
+      signature: response.signature,
+      paymentId: response.paymentId,
+      orderId: response.orderId,
+    );
+  }
 
-//   Future<ProviderResponse> checkMobileNumber(String mobileNumber) async {
-//     try {
-//       final response = await _cloud
-//           .collection('user')
-//           .where('mobileNumber', isEqualTo: mobileNumber)
-//           .get();
-//       if (response.docs.isNotEmpty) {
-//         return ProviderResponse.userExists;
-//       }
-//       return ProviderResponse.userDoesnotExist;
-//     } catch (e) {
-//       await Sentry.captureException(e);
-//       return ProviderResponse.error;
-//     }
-//   }
+  void _handlePaymentError(PaymentFailureResponse response) {
+    print(response);
+    // Do something when payment fails
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(response.message ?? ''),
+      ),
+    );
+  }
 
-//   Future<ProviderResponse> editUser(AppUser appUser) async {
-//     try {
-//       final data = {
-//         "name": appUser.name,
-//         "facebook": appUser.facebook,
-//         "imageID": appUser.imageID,
-//         "imageURL": appUser.imageURL,
-//         "instagram": appUser.instagram,
-//         "mobileNumber": appUser.mobileNumber,
-//         "role": appUser.role,
-//         "twitter": appUser.twitter,
-//       };
-//       await _cloud.collection('user').doc(appUser.id).update(data);
-//       _appUser = appUser;
-//       notifyListeners();
-//       ;
-//       return ProviderResponse.success;
-//     } catch (e) {
-//       await Sentry.captureException(e);
-//       return ProviderResponse.error;
-//     }
-//   }
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    print(response);
+    // Do something when an external wallet is selected
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(response.walletName ?? ''),
+      ),
+    );
+  }
 
-//   Future<ProviderResponse> changeProfileImage(
-//       {required File file,
-//       required String userid,
-//       required String imageID}) async {
-//     try {
-//       if (imageID != "") {
-//         await _storage.ref().child(imageID).delete();
-//       }
-//       final imageUpload = await _storage
-//           .ref()
-//           .child('$userid/profile${path.extension(file.path)}')
-//           .putFile(file);
-//       final downloadUrl = await imageUpload.ref.getDownloadURL();
-//       await _cloud.collection('user').doc(userid).update({
-//         "imageID": imageUpload.ref.fullPath,
-//         "imageURL": downloadUrl,
-//       });
-//       _appUser!.imageID = imageUpload.ref.fullPath;
-//       _appUser!.imageURL = downloadUrl;
-//       notifyListeners();
-//       return ProviderResponse.success;
-//     } catch (e) {
-//       await Sentry.captureException(e);
-//       return ProviderResponse.error;
-//     }
-//   }
+// create order
+  void createOrder() async {
+    String username = razorCredentials.keyId;
+    String password = razorCredentials.keySecret;
+    String basicAuth =
+        'Basic ${base64Encode(utf8.encode('$username:$password'))}';
 
-//   Future<ProviderResponse> getConfigDetails() async {
-//     try {
-//       final response = await _cloud
-//           .collection('config')
-//           .where('flag', isEqualTo: true)
-//           .get();
-//       if (response.docs.length != 0) {
-//         final data = response.docs.first.data();
-//         _emails = List<Map<String, dynamic>>.from(data["admin"]);
-//         if (data["maintenance"] == true) {
-//           return ProviderResponse.underMaintenance;
-//         }
-//       }
-//       notifyListeners();
-//       return ProviderResponse.success;
-//     } catch (e) {
-//       await Sentry.captureException(e);
-//       return ProviderResponse.error;
-//     }
-//   }
+    Map<String, dynamic> body = {
+      "amount": 100,
+      "currency": "INR",
+      "receipt": "rcptid_11"
+    };
+    var res = await http.post(
+      Uri.https(
+          "api.razorpay.com", "v1/orders"), //https://api.razorpay.com/v1/orders
+      headers: <String, String>{
+        "Content-Type": "application/json",
+        'authorization': basicAuth,
+      },
+      body: jsonEncode(body),
+    );
 
-//   void clear() {
-//     _appUser = null;
-//     notifyListeners();
-//   }
-// }
+    if (res.statusCode == 200) {
+      openGateway(jsonDecode(res.body)['id']);
+    }
+    print(res.body);
+  }
+
+  openGateway(String orderId) {
+    var options = {
+      'key': razorCredentials.keyId,
+      'amount': 100, //in the smallest currency sub-unit.
+      'name': 'Acme Corp.',
+      'order_id': orderId, // Generate order_id using Orders API
+      'description': 'Fine T-Shirt',
+      'timeout': 60 * 5, // in seconds // 5 minutes
+      'prefill': {
+        'contact': '9123456789',
+        'email': 'ary@example.com',
+      }
+    };
+    _razorpay.open(options);
+  }
+
+  verifySignature({
+    String? signature,
+    String? paymentId,
+    String? orderId,
+  }) async {
+    Map<String, dynamic> body = {
+      'razorpay_signature': signature,
+      'razorpay_payment_id': paymentId,
+      'razorpay_order_id': orderId,
+    };
+
+    var parts = [];
+    body.forEach((key, value) {
+      parts.add('${Uri.encodeQueryComponent(key)}='
+          '${Uri.encodeQueryComponent(value)}');
+    });
+    var formData = parts.join('&');
+    var res = await http.post(
+      Uri.https(
+        "10.0.2.2", // my ip address , localhost
+        "razorpay_signature_verify.php",
+      ),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded", // urlencoded
+      },
+      body: formData,
+    );
+
+    print(res.body);
+    if (res.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res.body),
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _razorpay.clear(); // Removes all listeners
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Razorpay Demo"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                createOrder();
+              },
+              child: const Text("Pay Rs.100"),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}

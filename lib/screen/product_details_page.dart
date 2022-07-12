@@ -141,11 +141,7 @@ class ProductDetail extends StatelessWidget {
               ),
               InkWell(
                 onTap: () {
-                  cart.addItem(loadedProduct.id!, loadedProduct.price,
-                      loadedProduct.title, loadedProduct.imgurl);
-
-                  displaySnackBar(
-                      context: context, text: 'Product added to Cart...');
+                  Navigator.pop(context);
                 },
                 child: Container(
                   alignment: Alignment.center,
@@ -177,7 +173,11 @@ class ProductDetail extends StatelessWidget {
               ),
               InkWell(
                 onTap: () {
-                  Navigator.pop(context);
+                  cart.addItem(loadedProduct.id!, loadedProduct.price,
+                      loadedProduct.title, loadedProduct.imgurl);
+
+                  displaySnackBar(
+                      context: context, text: 'Product added to Cart...');
                 },
                 child: Container(
                     alignment: Alignment.center,
