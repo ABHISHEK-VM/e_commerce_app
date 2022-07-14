@@ -101,9 +101,27 @@ class OrderDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color.fromARGB(255, 3, 0, 14),
+                  Color.fromARGB(255, 2, 32, 57),
+                  Color.fromARGB(255, 6, 63, 109),
+                  Color.fromARGB(255, 19, 109, 182),
+                  Colors.blue
+                ]),
+          ),
+        ),
         title: Text(
           "Order Details",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 19),
+          style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600, fontSize: 19, color: Colors.white),
         ),
       ),
       body: Column(
@@ -293,7 +311,17 @@ class OrderDetailsPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             width: double.infinity,
-            color: Colors.amber,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: <Color>[
+                    Color.fromARGB(255, 3, 50, 105),
+                    Color.fromARGB(255, 11, 82, 141),
+                    Color.fromARGB(255, 14, 111, 190),
+                    Colors.blue,
+                  ]),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -304,12 +332,16 @@ class OrderDetailsPage extends StatelessWidget {
                     Text(
                       "Total Amount  ",
                       style: GoogleFonts.poppins(
-                          fontSize: 14, fontWeight: FontWeight.w500),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white),
                     ),
                     Text(
                       "₹ 125",
                       style: GoogleFonts.poppins(
-                          fontSize: 25, fontWeight: FontWeight.w800),
+                          fontSize: 25,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white),
                     ),
                   ],
                 ),

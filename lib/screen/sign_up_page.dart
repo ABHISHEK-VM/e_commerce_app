@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerceapp/provider/sign_up_provider.dart';
 import 'package:ecommerceapp/screen/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../widget/reusables.dart';
 import '../widget/sign_resuable.dart';
 
 import '../widget/utiles.dart';
@@ -15,93 +16,300 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _userNameTextController = TextEditingController();
+  final TextEditingController _nameTextController = TextEditingController();
   final TextEditingController _phoneTextController = TextEditingController();
   final TextEditingController _addressTextController = TextEditingController();
-  void signUpUser() async {
-    FirebaseAuthMethods(FirebaseAuth.instance).signUpWithEmail(
-      name: _userNameTextController.text,
-      email: _emailTextController.text,
-      password: _passwordTextController.text,
-      address: _addressTextController.text,
-      phone: _phoneTextController.text,
-      context: context,
-    );
-    var docid = FirebaseFirestore.instance.collection("userdata").doc();
-    Map<String, dynamic> userdata = {
-      "name": _userNameTextController.text,
-      "email": _emailTextController.text,
-      "address": _addressTextController.text,
-      "phone": _phoneTextController.text,
-      "id": docid.id,
-    };
-    FirebaseFirestore.instance.collection("userdata").add(userdata);
+
+  bool _isloading = false;
+
+  void _signUp() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isloading = true;
+      });
+      await FirebaseAuthMethods(FirebaseAuth.instance).signUpWithEmail(
+        name: _nameTextController.text,
+        email: _emailTextController.text,
+        password: _passwordTextController.text,
+        address: _addressTextController.text,
+        phone: _phoneTextController.text,
+        context: context,
+      );
+      var docid = FirebaseFirestore.instance.collection("userdata").doc();
+      Map<String, dynamic> userdata = {
+        "name": _nameTextController.text,
+        "email": _emailTextController.text,
+        "address": _addressTextController.text,
+        "phone": _phoneTextController.text,
+        "id": docid.id,
+      };
+      FirebaseFirestore.instance
+          .collection("userdata")
+          .add(userdata)
+          .then((value) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      }).onError((error, stackTrace) {
+        displaySnackBar(text: error.toString(), context: context);
+        print("Error ${error.toString()}");
+      });
+      setState(() {
+        _isloading = false;
+      });
+    }
   }
+
+  // void signUpUser() async {
+  //   FirebaseAuthMethods(FirebaseAuth.instance).signUpWithEmail(
+  //     name: _nameTextController.text,
+  //     email: _emailTextController.text,
+  //     password: _passwordTextController.text,
+  //     address: _addressTextController.text,
+  //     phone: _phoneTextController.text,
+  //     context: context,
+  //   );
+  //   var docid = FirebaseFirestore.instance.collection("userdata").doc();
+  //   Map<String, dynamic> userdata = {
+  //     "name": _nameTextController.text,
+  //     "email": _emailTextController.text,
+  //     "address": _addressTextController.text,
+  //     "phone": _phoneTextController.text,
+  //     "id": docid.id,
+  //   };
+  //   FirebaseFirestore.instance.collection("userdata").add(userdata);
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
           "Sign Up",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-            hexStringToColor("CB2B93"),
-            hexStringToColor("9546C4"),
-            hexStringToColor("5E61F4")
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-          child: SingleChildScrollView(
-              child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(
-                  height: 20,
+      body: _isloading
+          ? loader(context)
+          : Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  Color.fromARGB(255, 3, 0, 14),
+                  Color.fromARGB(255, 2, 32, 57),
+                  Color.fromARGB(255, 6, 63, 109),
+                  Color.fromARGB(255, 14, 92, 156),
+                  Colors.blue
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+              ),
+              child: SingleChildScrollView(
+                  child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: _nameTextController,
+                        obscureText: false,
+                        cursorColor: Colors.white,
+                        style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.account_circle_rounded,
+                            color: Colors.white70,
+                          ),
+                          labelText: 'Enter your Name',
+                          labelStyle:
+                              TextStyle(color: Colors.white.withOpacity(0.9)),
+                          filled: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: Colors.white.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                              borderSide: const BorderSide(
+                                  width: 0, style: BorderStyle.none)),
+                        ),
+                        keyboardType: TextInputType.text,
+                        validator: (value) {
+                          // Check if this field is empty
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+
+                          // the email is valid
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: _emailTextController,
+                        obscureText: false,
+                        cursorColor: Colors.white,
+                        style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.mail,
+                            color: Colors.white70,
+                          ),
+                          labelText: 'Enter your email',
+                          labelStyle:
+                              TextStyle(color: Colors.white.withOpacity(0.9)),
+                          filled: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: Colors.white.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                              borderSide: const BorderSide(
+                                  width: 0, style: BorderStyle.none)),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          // Check if this field is empty
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+
+                          // using regular expression
+                          if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                            return "Please enter a valid email address";
+                          }
+
+                          // the email is valid
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: _addressTextController,
+                        obscureText: false,
+                        cursorColor: Colors.white,
+                        style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.location_city_rounded,
+                            color: Colors.white70,
+                          ),
+                          labelText: 'Enter your Address',
+                          labelStyle:
+                              TextStyle(color: Colors.white.withOpacity(0.9)),
+                          filled: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: Colors.white.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                              borderSide: const BorderSide(
+                                  width: 0, style: BorderStyle.none)),
+                        ),
+                        keyboardType: TextInputType.text,
+                        validator: (value) {
+                          // Check if this field is empty
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+
+                          // the email is valid
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: _phoneTextController,
+                        obscureText: false,
+                        cursorColor: Colors.white,
+                        style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.phone,
+                            color: Colors.white70,
+                          ),
+                          labelText: 'Enter your Phone Number',
+                          labelStyle:
+                              TextStyle(color: Colors.white.withOpacity(0.9)),
+                          filled: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: Colors.white.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                              borderSide: const BorderSide(
+                                  width: 0, style: BorderStyle.none)),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          // Check if this field is empty
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+
+                          // the email is valid
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: _passwordTextController,
+                        obscureText: true,
+                        cursorColor: Colors.white,
+                        style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.lock,
+                            color: Colors.white70,
+                          ),
+                          labelText: 'Create a password',
+                          labelStyle:
+                              TextStyle(color: Colors.white.withOpacity(0.9)),
+                          filled: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: Colors.white.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                              borderSide: const BorderSide(
+                                  width: 0, style: BorderStyle.none)),
+                        ),
+                        keyboardType: TextInputType.visiblePassword,
+                        validator: (value) {
+                          // Check if this field is empty
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+
+                          // the email is valid
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      firebaseUIButton(context, "Sign Up", () {
+                        _signUp();
+                      })
+                    ],
+                  ),
                 ),
-                reusableTextField("Enter UserName", Icons.person_outline, false,
-                    _userNameTextController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField("Enter Email Id", Icons.person_outline, false,
-                    _emailTextController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField("Address", Icons.person_outline, false,
-                    _addressTextController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField("Phone numbr", Icons.person_outline, false,
-                    _phoneTextController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField("Enter Password", Icons.lock_outlined, true,
-                    _passwordTextController),
-                const SizedBox(
-                  height: 20,
-                ),
-                firebaseUIButton(context, "Sign Up", () {
-                  signUpUser();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomePage()));
-                })
-              ],
-            ),
-          ))),
+              ))),
     );
   }
 }

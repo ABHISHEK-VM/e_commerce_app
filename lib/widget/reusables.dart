@@ -23,3 +23,12 @@ void displaySnackBar({required String text, BuildContext? context}) {
     ),
   );
 }
+
+Widget loader(BuildContext context) {
+  return const Center(
+    child: CircularProgressIndicator(
+      valueColor:
+          AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 4, 112, 220)),
+    ),
+  );
+}

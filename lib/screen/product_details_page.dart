@@ -20,10 +20,29 @@ class ProductDetail extends StatelessWidget {
         Provider.of<Products>(context, listen: false).findById(productId!);
     return Scaffold(
       appBar: AppBar(
-          title: Text(
-        loadedProduct.title,
-        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 19),
-      )),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color.fromARGB(255, 3, 0, 14),
+                  Color.fromARGB(255, 2, 32, 57),
+                  Color.fromARGB(255, 6, 63, 109),
+                  Color.fromARGB(255, 19, 109, 182),
+                  Colors.blue
+                ]),
+          ),
+        ),
+        title: Text(
+          loadedProduct.title,
+          style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600, fontSize: 19, color: Colors.white),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(11.0),
@@ -174,7 +193,7 @@ class ProductDetail extends StatelessWidget {
               InkWell(
                 onTap: () {
                   cart.addItem(loadedProduct.id!, loadedProduct.price,
-                      loadedProduct.title, loadedProduct.imgurl);
+                      loadedProduct.title, loadedProduct.imgurl, 1);
 
                   displaySnackBar(
                       context: context, text: 'Product added to Cart...');

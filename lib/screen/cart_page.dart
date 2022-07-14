@@ -37,7 +37,17 @@ class CartPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             width: double.infinity,
-            color: Colors.amber,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: <Color>[
+                    Color.fromARGB(255, 3, 50, 105),
+                    Color.fromARGB(255, 11, 82, 141),
+                    Color.fromARGB(255, 14, 111, 190),
+                    Colors.blue,
+                  ]),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -48,17 +58,20 @@ class CartPage extends StatelessWidget {
                     Text(
                       "Total Amount  ",
                       style: GoogleFonts.poppins(
-                          fontSize: 14, fontWeight: FontWeight.w500),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white),
                     ),
                     Text(
                       "₹ ${cart.totalAmount.toStringAsFixed(2)}",
                       style: GoogleFonts.poppins(
-                          fontSize: 25, fontWeight: FontWeight.w800),
+                          fontSize: 25,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white),
                     ),
                   ],
                 ),
                 InkWell(
-                  hoverColor: Colors.red,
                   onTap: () {
                     if (cart.items.isNotEmpty) {
                       Provider.of<Orders>(context, listen: false).addOrder(

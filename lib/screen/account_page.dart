@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerceapp/screen/edit_account_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -9,6 +11,7 @@ import '../provider/account_provider.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
+
   static const routeName = '/account_Details';
   @override
   State<AccountPage> createState() => _AccountPageState();
@@ -16,9 +19,43 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   @override
+  void initState() {
+    super.initState();
+    print("hi hello");
+    _getDataFromDatabase();
+  }
+
+  final _cloud = FirebaseFirestore.instance;
+
+  String? name = 'ee';
+  String? email = '';
+  String? address = '';
+  String? phone = '';
+  String? id = '';
+
+  Future _getDataFromDatabase() async {
+    await _cloud
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .
+
+        //doc(FirebaseAuth.instance.currentUser!.uid).snapshots()
+        then((snapshot) async {
+      if (snapshot.exists) {
+        setState(() {
+          // id = snapshot.get("id");
+          name = snapshot.data()!["name"];
+          email = snapshot.data()!["email"];
+          address = snapshot.data()!["address"];
+          phone = snapshot.data()!["phone"];
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final details = Provider.of<AccountProvider>(context);
-    final datas = details.datas;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -60,7 +97,7 @@ class _AccountPageState extends State<AccountPage> {
                         Flexible(
                           fit: FlexFit.loose,
                           child: Text(
-                            datas.first.name,
+                            address!,
                             softWrap: true,
                             overflow: TextOverflow.visible,
                             style: GoogleFonts.roboto(
@@ -93,7 +130,7 @@ class _AccountPageState extends State<AccountPage> {
                         Flexible(
                           fit: FlexFit.loose,
                           child: Text(
-                            " provider.appUser!.name",
+                            'name is : ${id!}',
                             softWrap: true,
                             overflow: TextOverflow.visible,
                             style: GoogleFonts.roboto(

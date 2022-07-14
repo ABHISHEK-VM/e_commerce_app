@@ -22,6 +22,8 @@ import '../razor_credentials.dart' as razor_credentials;
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
+  static const routeName = '/homepage';
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -52,6 +54,8 @@ class _HomePageState extends State<HomePage> {
 
     Products productsdata = Provider.of(context, listen: false);
     productsdata.getInventory();
+    Cart cartData = Provider.of(context, listen: false);
+    cartData.getCartItem();
     super.initState();
   }
 

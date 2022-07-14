@@ -55,8 +55,9 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.amber,
             primaryColor: Colors.amber,
             secondaryHeaderColor: Colors.amber),
-        home: HomePage(),
+        home: SignInScreen(),
         routes: {
+          HomePage.routeName: (context) => HomePage(),
           ProductDetail.routeName: (context) => const ProductDetail(),
           CartPage.routeName: (context) => const CartPage(),
           InventoryPage.routeName: (context) => const InventoryPage(),
