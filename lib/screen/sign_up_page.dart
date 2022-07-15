@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerceapp/provider/sign_up_provider.dart';
 import 'package:ecommerceapp/screen/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widget/reusables.dart';
 import '../widget/sign_resuable.dart';
 
@@ -24,42 +25,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _phoneTextController = TextEditingController();
   final TextEditingController _addressTextController = TextEditingController();
 
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  late FirebaseAuthMethods _authMethods;
+
   bool _isloading = false;
 
-  void _signUp() async {
+  Future _signUp(String name, String email, String phone, String address,
+      String password) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isloading = true;
       });
-      await FirebaseAuthMethods(FirebaseAuth.instance).signUpWithEmail(
-        name: _nameTextController.text,
+
+      var result = await _auth.createUserWithEmailAndPassword(
         email: _emailTextController.text,
         password: _passwordTextController.text,
-        address: _addressTextController.text,
-        phone: _phoneTextController.text,
-        context: context,
       );
-      var docid = FirebaseFirestore.instance.collection("userdata").doc();
-      Map<String, dynamic> userdata = {
-        "name": _nameTextController.text,
-        "email": _emailTextController.text,
-        "address": _addressTextController.text,
-        "phone": _phoneTextController.text,
-        "id": docid.id,
-      };
-      FirebaseFirestore.instance
-          .collection("userdata")
-          .add(userdata)
-          .then((value) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
-      }).onError((error, stackTrace) {
-        displaySnackBar(text: error.toString(), context: context);
-        print("Error ${error.toString()}");
+
+      User? user = result.user;
+
+      await FirebaseAuthMethods()
+          .createUserData(name, email, phone, address, user!.uid)
+          .then((value) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('email', email);
+        Navigator.pushNamed((context), HomePage.routeName);
       });
+
       setState(() {
         _isloading = false;
       });
+
+      return user;
     }
   }
 
@@ -304,7 +301,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 20,
                       ),
                       firebaseUIButton(context, "Sign Up", () {
-                        _signUp();
+                        _signUp(
+                            _nameTextController.text,
+                            _emailTextController.text,
+                            _phoneTextController.text,
+                            _addressTextController.text,
+                            _passwordTextController.text);
                       })
                     ],
                   ),

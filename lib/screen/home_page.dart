@@ -5,9 +5,13 @@ import 'dart:io';
 import 'package:ecommerceapp/provider/products.dart';
 import 'package:ecommerceapp/screen/account_page.dart';
 import 'package:ecommerceapp/screen/inventory_page.dart';
+import 'package:ecommerceapp/screen/sign_in_page.dart';
+import 'package:ecommerceapp/widget/reusables.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../provider/cart.dart';
 import '../widget/product_favorite.dart';
@@ -29,7 +33,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   int _selectedIndex = 0;
+  bool _isLoading = false;
 
   var _razorpay = Razorpay();
 
@@ -51,9 +58,15 @@ class _HomePageState extends State<HomePage> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-
+    setState(() {
+      _isLoading = true;
+    });
     Products productsdata = Provider.of(context, listen: false);
     productsdata.getInventory();
+
+    setState(() {
+      _isLoading = false;
+    });
     Cart cartData = Provider.of(context, listen: false);
     cartData.getCartItem();
     super.initState();
@@ -144,6 +157,16 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
               },
             ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.remove('email');
+                _signOut((context));
+              },
+            ),
           ],
         ),
       ),
@@ -171,7 +194,9 @@ class _HomePageState extends State<HomePage> {
               fontWeight: FontWeight.w600, fontSize: 19, color: Colors.white),
         ),
       ),
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: _isLoading
+          ? loader(context)
+          : _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 70,
 
@@ -210,6 +235,12 @@ class _HomePageState extends State<HomePage> {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  Future<void> _signOut(BuildContext context) async {
+    await _firebaseAuth
+        .signOut()
+        .then((_) => Navigator.pushNamed(context, SignInScreen.routeName));
   }
 
   @override

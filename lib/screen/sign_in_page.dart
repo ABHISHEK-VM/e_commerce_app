@@ -6,6 +6,7 @@ import 'package:ecommerceapp/widget/reusables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widget/sign_resuable.dart';
 
@@ -13,6 +14,7 @@ import '../widget/utiles.dart';
 import 'package:flutter/material.dart';
 
 class SignInScreen extends StatefulWidget {
+  static const routeName = '/signInPage';
   const SignInScreen({Key? key}) : super(key: key);
 
   @override
@@ -33,9 +35,12 @@ class _SignInScreenState extends State<SignInScreen> {
           .signInWithEmailAndPassword(
               email: _emailTextController.text,
               password: _passwordTextController.text)
-          .then((value) {
+          .then((value) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('email', _emailTextController.text);
+        Navigator.pushNamed((context), HomePage.routeName);
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
+            (context), MaterialPageRoute(builder: (context) => HomePage()));
       }).onError((error, stackTrace) {
         displaySnackBar(text: error.toString(), context: context);
         print("Error ${error.toString()}");

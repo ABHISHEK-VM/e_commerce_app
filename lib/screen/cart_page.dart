@@ -76,11 +76,12 @@ class CartPage extends StatelessWidget {
                     if (cart.items.isNotEmpty) {
                       Provider.of<Orders>(context, listen: false).addOrder(
                           cart.items.values.toList(), cart.totalAmount);
-                      cart.clear();
 
                       Navigator.of(context).pushNamed(
                         OrderDetailsPage.routeName,
+                        arguments: cart.totalAmount.toStringAsFixed(2),
                       );
+                      cart.clear();
                     } else {
                       displaySnackBar(
                           text: 'Please add atleast one item',

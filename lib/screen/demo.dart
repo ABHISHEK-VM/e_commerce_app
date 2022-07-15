@@ -329,3 +329,58 @@
   // }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// void _signUp() async {
+//     if (_formKey.currentState!.validate()) {
+//       setState(() {
+//         _isloading = true;
+//       });
+//       var result =
+//           await _auth.createUserWithEmailAndPassword(
+//         // name: _nameTextController.text,
+//         email: _emailTextController.text,
+//         password: _passwordTextController.text,
+//         // address: _addressTextController.text,
+//         // phone: _phoneTextController.text,
+//         // context: context,
+//       );
+//       User user = result.user;
+//       var docid = FirebaseFirestore.instance.collection("userdata").doc();
+//       Map<String, dynamic> userdata = {
+//         "name": _nameTextController.text,
+//         "email": _emailTextController.text,
+//         "address": _addressTextController.text,
+//         "phone": _phoneTextController.text,
+//         "id": docid.id,
+//       };
+//       FirebaseFirestore.instance
+//           .collection("userdata")
+//           .add(userdata)
+//           .then((value) async {
+//         SharedPreferences prefs = await SharedPreferences.getInstance();
+//         prefs.setString('email', _emailTextController.toString());
+//         Navigator.push(
+//             (context), MaterialPageRoute(builder: (context) => HomePage()));
+//       }).onError((error, stackTrace) {
+//         displaySnackBar(text: error.toString(), context: context);
+//         print("Error ${error.toString()}");
+//       });
+//       setState(() {
+//         _isloading = false;
+//       });
+//     }
+//   }

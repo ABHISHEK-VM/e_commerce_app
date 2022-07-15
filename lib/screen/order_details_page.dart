@@ -1,19 +1,18 @@
+import 'package:ecommerceapp/provider/account_provider.dart';
 import 'package:ecommerceapp/widget/reusables.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'home_page.dart';
 
-import 'dart:ui';
 import 'dart:convert';
-import 'dart:io';
 
 import '../razor_credentials.dart' as razor_credentials;
 import 'package:http/http.dart' as http;
 
 class OrderDetailsPage extends StatelessWidget {
-  var _razorpay = Razorpay();
+  final _razorpay = Razorpay();
 
   OrderDetailsPage({Key? key}) : super(key: key);
 
@@ -99,6 +98,7 @@ class OrderDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final totalAmount = ModalRoute.of(context)!.settings.arguments as String?;
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(
@@ -138,84 +138,95 @@ class OrderDetailsPage extends StatelessWidget {
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Deliver to:',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.black,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.edit_location_alt_rounded))
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                      padding: const EdgeInsets.all(15),
+                      child: Consumer<AccountProvider>(
+                          builder: ((ctx, e, _) => Column(
                                 children: [
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * .67,
-                                    child: Text(
-                                      'Areena S Jayan',
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.black,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * .80,
-                                    child: Text(
-                                        'Ushas, Near Second Railway Gate, Vakkom (695308)',
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Deliver to:',
                                         style: GoogleFonts.poppins(
                                           color: Colors.black,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w800,
                                         ),
-                                        overflow: TextOverflow.visible),
+                                      ),
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(
+                                              Icons.edit_location_alt_rounded))
+                                    ],
                                   ),
                                   Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Icon(
-                                        Icons.call_rounded,
-                                        size: 16,
-                                      ),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .80,
-                                        child: Text(' 8113062249',
-                                            style: GoogleFonts.poppins(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .67,
+                                            child: Text(
+                                              e.account!.name,
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.black,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                            overflow: TextOverflow.visible),
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .80,
+                                            child: Text(e.account!.address,
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.black,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                overflow: TextOverflow.visible),
+                                          ),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.call_rounded,
+                                                size: 16,
+                                              ),
+                                              SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    .80,
+                                                child: Text(e.account!.phone,
+                                                    style: GoogleFonts.poppins(
+                                                      color: Colors.black,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.visible),
+                                              ),
+                                            ],
+                                          )
+                                        ],
                                       ),
                                     ],
-                                  )
+                                  ),
                                 ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                              ))),
                     ),
                   ),
                   Card(
@@ -248,7 +259,7 @@ class OrderDetailsPage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '\$ 100',
+                                '\₹ $totalAmount',
                                 style: GoogleFonts.poppins(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -269,7 +280,7 @@ class OrderDetailsPage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '\$ 25',
+                                '\₹ 25',
                                 style: GoogleFonts.poppins(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -291,7 +302,7 @@ class OrderDetailsPage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '\$ 125',
+                                '\₹ ${double.parse(totalAmount!) + 25}',
                                 style: GoogleFonts.poppins(
                                   color: Colors.black,
                                   fontSize: 15,
@@ -337,7 +348,7 @@ class OrderDetailsPage extends StatelessWidget {
                           color: Colors.white),
                     ),
                     Text(
-                      "₹ 125",
+                      '\₹ ${double.parse(totalAmount!) + 25}',
                       style: GoogleFonts.poppins(
                           fontSize: 25,
                           fontWeight: FontWeight.w800,

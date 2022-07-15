@@ -13,6 +13,21 @@ class AccountProvider with ChangeNotifier {
     return _account;
   }
 
+  Future getData() async {
+    await _cloud
+        .collection("userData")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    _account = Account(
+      name: "name",
+      address: "address",
+      email: "email",
+      phone: "phone",
+    );
+    notifyListeners();
+  }
+
   // Future<void> getUser(String id) async {
   //   try {
   //     final result = await _cloud

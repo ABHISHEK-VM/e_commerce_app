@@ -11,6 +11,7 @@ import 'package:ecommerceapp/screen/order_details_page.dart';
 import 'package:ecommerceapp/screen/sign_in_page.dart';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'provider/products.dart';
 import 'package:provider/provider.dart';
@@ -23,49 +24,44 @@ void main() async {
 
   await Firebase.initializeApp();
 
-  runApp(const MyApp());
-}
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? email = prefs.getString('email');
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(
-          value: Products(),
-        ),
-        ChangeNotifierProvider.value(
-          value: AccountProvider(),
-        ),
-        ChangeNotifierProvider.value(
-          value: Cart(),
-        ),
-        ChangeNotifierProvider.value(
-          value: Orders(),
-        ),
-        ChangeNotifierProvider.value(
-          value: InventoryProvider(),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'E-commerce App',
-        theme: ThemeData(
-            primarySwatch: Colors.amber,
-            primaryColor: Colors.amber,
-            secondaryHeaderColor: Colors.amber),
-        home: SignInScreen(),
-        routes: {
-          HomePage.routeName: (context) => HomePage(),
-          ProductDetail.routeName: (context) => const ProductDetail(),
-          CartPage.routeName: (context) => const CartPage(),
-          InventoryPage.routeName: (context) => const InventoryPage(),
-          OrderDetailsPage.routeName: (context) => OrderDetailsPage(),
-          AccountPage.routeName: (context) => const AccountPage(),
-          EditAccountPage.routeName: (context) => const EditAccountPage()
-        },
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider.value(
+        value: Products(),
       ),
-    );
-  }
+      ChangeNotifierProvider.value(
+        value: AccountProvider(),
+      ),
+      ChangeNotifierProvider.value(
+        value: Cart(),
+      ),
+      ChangeNotifierProvider.value(
+        value: Orders(),
+      ),
+      ChangeNotifierProvider.value(
+        value: InventoryProvider(),
+      ),
+    ],
+    child: MaterialApp(
+      title: 'E-commerce App',
+      theme: ThemeData(
+          primarySwatch: Colors.amber,
+          primaryColor: Colors.amber,
+          secondaryHeaderColor: Colors.amber),
+      home: email == null ? const SignInScreen() : HomePage(),
+      routes: {
+        HomePage.routeName: (context) => HomePage(),
+        ProductDetail.routeName: (context) => const ProductDetail(),
+        CartPage.routeName: (context) => const CartPage(),
+        InventoryPage.routeName: (context) => const InventoryPage(),
+        OrderDetailsPage.routeName: (context) => OrderDetailsPage(),
+        AccountPage.routeName: (context) => const AccountPage(),
+        EditAccountPage.routeName: (context) => const EditAccountPage(),
+        SignInScreen.routeName: (context) => const SignInScreen()
+      },
+    ),
+  ));
 }
