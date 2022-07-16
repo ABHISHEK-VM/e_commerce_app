@@ -1,5 +1,7 @@
 import 'package:ecommerceapp/provider/account_provider.dart';
-import 'package:ecommerceapp/provider/cart.dart';
+
+import 'package:ecommerceapp/provider/cartProvider.dart';
+
 import 'package:ecommerceapp/provider/inventory.dart';
 import 'package:ecommerceapp/provider/order.dart';
 import 'package:ecommerceapp/screen/account_page.dart';
@@ -36,7 +38,7 @@ void main() async {
         value: AccountProvider(),
       ),
       ChangeNotifierProvider.value(
-        value: Cart(),
+        value: CartProvider(),
       ),
       ChangeNotifierProvider.value(
         value: Orders(),
@@ -54,8 +56,8 @@ void main() async {
       home: email == null ? const SignInScreen() : HomePage(),
       routes: {
         HomePage.routeName: (context) => HomePage(),
-        ProductDetail.routeName: (context) => const ProductDetail(),
-        CartPage.routeName: (context) => const CartPage(),
+        ProductDetail.routeName: (context) => ProductDetail(),
+        CartPage.routeName: (context) => CartPage(),
         InventoryPage.routeName: (context) => const InventoryPage(),
         OrderDetailsPage.routeName: (context) => OrderDetailsPage(),
         AccountPage.routeName: (context) => const AccountPage(),

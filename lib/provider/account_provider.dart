@@ -13,108 +13,31 @@ class AccountProvider with ChangeNotifier {
     return _account;
   }
 
+  String name = '';
+  String email = '';
+  String address = '';
+  String phone = '';
+
   Future getData() async {
     await _cloud
         .collection("userData")
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        name = snapshot.data()!["name"];
+        email = snapshot.data()!["email"];
+        address = snapshot.data()!["address"];
+        phone = snapshot.data()!["phone"];
+      }
+    });
     _account = Account(
-      name: "name",
-      address: "address",
-      email: "email",
-      phone: "phone",
+      name: name,
+      address: address,
+      email: email,
+      phone: phone,
     );
+
     notifyListeners();
   }
-
-  // Future<void> getUser(String id) async {
-  //   try {
-  //     final result = await _cloud
-  //         .collection("userdata")
-  //         .where('id', isEqualTo: id)
-  //         .get();
-
-  //     final details = result.docs.first.data();
-
-  //     _account = Account(
-  //       name: details["name"],
-  //       address: details["address"],
-  //       email: details["email"],
-  //       phone: details["phone"],
-  //     );
-  //     notifyListeners();
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
-  // Future<void> checkUser({required String email, required bool isLogin}) async {
-  //   try {
-  //     final result = await _cloud
-  //         .collection("userdata")
-  //         .where('email', isEqualTo: email)
-  //         .get();
-
-  //     print('email from firebaes : $result');
-
-  //     if (result.docs.isNotEmpty) {
-  //       if (isLogin) {
-  //         final details = result.docs.first.data();
-
-  //         _account = Account(
-  //           name: details["name"],
-  //           address: details["address"],
-  //           email: details["email"],
-  //           phone: details["phone"],
-  //         );
-  //       }
-  //       notifyListeners();
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
-  // Future<void> registeredUser(Account account) async {
-  //   try {
-  //     final data = {
-  //       "name": account.name,
-  //       "email": account.email,
-  //       "address": account.address,
-  //       "phone": account.phone,
-  //     };
-
-  //     final details = await _cloud.collection('userdata').add(data);
-
-  //     account.id = details.id;
-  //     _account = account;
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
-  // List<Account> _accountDetails = [];
-  // QuerySnapshot value = await _cloud.collection("userdata").get();
-
-  // for (var element in value.docs) {
-  //   var account = Account(
-  //     id: element.get("id"),
-  //     name: element.get("name"),
-  //     address: element.get("address"),
-  //     email: element.get("email"),
-  //     phone: element.get("phone"),
-  //   );
-
-  //   _accountDetails.add(account);
-  // }
-
-  // _datas = _accountDetails;
-  // print('new details : $_datas');
-  // notifyListeners();
 }
-
-  // List<Account> get datas {
-  //   return [..._datas];
-  // }
-

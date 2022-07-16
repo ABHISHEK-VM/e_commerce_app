@@ -1,6 +1,5 @@
-import 'dart:ui';
-import 'dart:convert';
-import 'dart:io';
+import 'package:ecommerceapp/model/cart_model.dart';
+import 'package:ecommerceapp/provider/account_provider.dart';
 
 import 'package:ecommerceapp/provider/products.dart';
 import 'package:ecommerceapp/screen/account_page.dart';
@@ -13,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../provider/cart.dart';
+import '../provider/cartProvider.dart';
 import '../widget/product_favorite.dart';
 import '../widget/product_grid.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +22,6 @@ import 'package:badges/badges.dart';
 import 'cart_page.dart';
 
 import '../razor_credentials.dart' as razor_credentials;
-import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   static const routeName = '/homepage';
@@ -40,9 +38,9 @@ class _HomePageState extends State<HomePage> {
 
   var _razorpay = Razorpay();
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    ProductGrid(),
-    ProductFavorite(true),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const ProductGrid(),
+    const ProductFavorite(true),
     CartPage(),
   ];
 
@@ -64,11 +62,12 @@ class _HomePageState extends State<HomePage> {
     Products productsdata = Provider.of(context, listen: false);
     productsdata.getInventory();
 
+    AccountProvider data = Provider.of(context, listen: false);
+    data.getData();
     setState(() {
       _isLoading = false;
     });
-    Cart cartData = Provider.of(context, listen: false);
-    cartData.getCartItem();
+
     super.initState();
   }
 
@@ -98,6 +97,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<CartProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 247, 253, 255),
       drawer: Drawer(
@@ -213,13 +213,13 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Badge(
               padding: const EdgeInsets.all(6),
-              badgeContent: Consumer<Cart>(
+              badgeContent: Consumer<CartProvider>(
                 builder: ((_, cartData, ch) => Text(
-                      cartData.itemCount.toString(),
+                      cartData.getCounter().toString(),
                       style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w900,
-                          color: Colors.white),
+                          color: Color.fromARGB(255, 255, 255, 255)),
                     )),
               ),
               child: const Icon(
@@ -231,7 +231,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Color.fromARGB(255, 7, 104, 250),
+        selectedItemColor: const Color.fromARGB(255, 7, 104, 250),
         onTap: _onItemTapped,
       ),
     );

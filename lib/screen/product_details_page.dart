@@ -1,20 +1,23 @@
+import 'package:ecommerceapp/database/db_helper.dart';
+import 'package:ecommerceapp/model/cart_model.dart';
+
 import 'package:ecommerceapp/widget/reusables.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../provider/cart.dart';
+
+import '../provider/cartProvider.dart';
 import '../provider/products.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductDetail extends StatelessWidget {
-  const ProductDetail({Key? key}) : super(key: key);
-
+  DBHelper? dbHelper = DBHelper();
   static const routeName = '/product_details_page';
   @override
   Widget build(BuildContext context) {
     final productId = ModalRoute.of(context)?.settings.arguments as String?;
 
-    final cart = Provider.of<Cart>(context, listen: false);
+    final cart = Provider.of<CartProvider>(context, listen: false);
 
     final loadedProduct =
         Provider.of<Products>(context, listen: false).findById(productId!);
@@ -187,16 +190,31 @@ class ProductDetail extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               InkWell(
                 onTap: () {
-                  cart.addItem(loadedProduct.id!, loadedProduct.price,
-                      loadedProduct.title, loadedProduct.imgurl, 1);
-
-                  displaySnackBar(
-                      context: context, text: 'Product added to Cart...');
+                  // cart.addItem(loadedProduct.id!, loadedProduct.price,
+                  //     loadedProduct.title, loadedProduct.imgurl, 1);
+                  dbHelper!
+                      .insert(Cart(
+                    id: loadedProduct.id.toString(),
+                    title: loadedProduct.title.toString(),
+                    initialPrice: loadedProduct.price,
+                    price: loadedProduct.price,
+                    quantity: 1,
+                    image: loadedProduct.imgurl.toString(),
+                  ))
+                      .then((value) {
+                    cart.addTotalPrice(
+                        double.parse(loadedProduct.price.toString()));
+                    cart.addCounter();
+                    displaySnackBar(
+                        context: context, text: 'Product added to Cart...');
+                  }).onError((error, stackTrace) {
+                    print('error issss : ${error.toString()}');
+                  });
                 },
                 child: Container(
                     alignment: Alignment.center,

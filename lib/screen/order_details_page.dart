@@ -190,7 +190,7 @@ class OrderDetailsPage extends StatelessWidget {
                                                     .size
                                                     .width *
                                                 .80,
-                                            child: Text(e.account!.address,
+                                            child: Text("e.account!.address",
                                                 style: GoogleFonts.poppins(
                                                   color: Colors.black,
                                                   fontSize: 14,
@@ -209,7 +209,7 @@ class OrderDetailsPage extends StatelessWidget {
                                                         .size
                                                         .width *
                                                     .80,
-                                                child: Text(e.account!.phone,
+                                                child: Text("e.account!.phone",
                                                     style: GoogleFonts.poppins(
                                                       color: Colors.black,
                                                       fontSize: 14,
@@ -348,7 +348,7 @@ class OrderDetailsPage extends StatelessWidget {
                           color: Colors.white),
                     ),
                     Text(
-                      '\₹ ${double.parse(totalAmount!) + 25}',
+                      '\₹ ${double.parse(totalAmount) + 25}',
                       style: GoogleFonts.poppins(
                           fontSize: 25,
                           fontWeight: FontWeight.w800,
