@@ -2,9 +2,9 @@
     package="com.example.ecommerceapp">
    
    <application
-        android:label="ecommerceapp"
+        android:label="GADSKart"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,5 +36,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+    
     </application>
 </manifest>

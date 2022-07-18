@@ -61,7 +61,6 @@ class ProductDetail extends StatelessWidget {
                 child: Column(
                   children: [
                     // CachedNetworkImage(
-
                     //   fit: BoxFit.cover,
                     //   imageBuilder: (context, imageProvider) => Container(
                     //     height: MediaQuery.of(context).size.height * .28,
@@ -79,18 +78,28 @@ class ProductDetail extends StatelessWidget {
                     //               value: downloadProgress.progress),
                     //   errorWidget: (context, url, error) =>
                     //       const Icon(Icons.error),
-
                     // ),
 
-                    Container(
-                      height: MediaQuery.of(context).size.height * .28,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        image: DecorationImage(
-                            image: NetworkImage(loadedProduct.imgurl),
-                            fit: BoxFit.cover),
+                    CachedNetworkImage(
+                      imageUrl: loadedProduct.imgurl,
+                      fit: BoxFit.cover,
+                      imageBuilder: (context, imageProvider) => Container(
+                        height: MediaQuery.of(context).size.height * .28,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                        ),
                       ),
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      // placeholder: (context, url) => loader(context),
                     ),
+
                     Padding(
                       padding: const EdgeInsets.fromLTRB(15, 8, 17, 8),
                       child: Row(
@@ -213,7 +222,9 @@ class ProductDetail extends StatelessWidget {
                     displaySnackBar(
                         context: context, text: 'Product added to Cart...');
                   }).onError((error, stackTrace) {
-                    print('error issss : ${error.toString()}');
+                    displaySnackBar(
+                        text: 'Product is already added in Cart...',
+                        context: context);
                   });
                 },
                 child: Container(

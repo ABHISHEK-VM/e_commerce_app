@@ -59,7 +59,14 @@ class _InventoryPageState extends State<InventoryPage> {
             "price": double.parse(_price.text),
             "id": docid.id,
           };
-          FirebaseFirestore.instance.collection("inventory").add(inventory);
+          FirebaseFirestore.instance
+              .collection("inventory")
+              .add(inventory)
+              .then((value) {
+            displaySnackBar(
+                text: 'Data was saved successfully...', context: context);
+            Navigator.pop(context);
+          });
         }
       }
     }
@@ -137,9 +144,9 @@ class _InventoryPageState extends State<InventoryPage> {
         maxWidth: 700,
         compressFormat: ImageCompressFormat.jpg,
         androidUiSettings: const AndroidUiSettings(
-          toolbarColor: Color(0xFF3c3c7a),
+          toolbarColor: Color.fromARGB(255, 0, 103, 187),
           toolbarTitle: "Crop",
-          statusBarColor: Color(0xFF3c3c7a),
+          statusBarColor: Color.fromARGB(255, 0, 103, 187),
         ),
       );
       setState(() {
@@ -285,7 +292,7 @@ class _InventoryPageState extends State<InventoryPage> {
                         ),
                         validator: (val) {
                           if (val!.trim().length < 2) {
-                            return 'Tell something abt the product';
+                            return 'Tell something about the product';
                           } else {
                             return null;
                           }
@@ -314,8 +321,8 @@ class _InventoryPageState extends State<InventoryPage> {
                           ),
                         ),
                         validator: (val) {
-                          if (val!.trim().length < 2) {
-                            return 'Enter a valid Title';
+                          if (val!.trim().isEmpty) {
+                            return 'Enter an Amount';
                           } else {
                             return null;
                           }
@@ -334,7 +341,6 @@ class _InventoryPageState extends State<InventoryPage> {
                     // _description.clear();
 
                     // _price.clear();
-                    Navigator.pop(context);
                   },
                   child: Container(
                     decoration: const BoxDecoration(

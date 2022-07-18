@@ -1,12 +1,12 @@
 class Account {
-  String? id;
-  final String name;
-  final String address;
-  final String phone;
-  final String email;
+  String id;
+  String name;
+  String address;
+  String phone;
+  String email;
 
   Account(
-      {this.id,
+      {required this.id,
       required this.name,
       required this.address,
       required this.email,

@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerceapp/provider/account_provider.dart';
 import 'package:ecommerceapp/widget/reusables.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -11,12 +13,23 @@ import 'dart:convert';
 import '../razor_credentials.dart' as razor_credentials;
 import 'package:http/http.dart' as http;
 
-class OrderDetailsPage extends StatelessWidget {
-  final _razorpay = Razorpay();
-
+class OrderDetailsPage extends StatefulWidget {
   OrderDetailsPage({Key? key}) : super(key: key);
 
   static const routeName = '/order_details_page';
+
+  @override
+  State<OrderDetailsPage> createState() => _OrderDetailsPageState();
+}
+
+class _OrderDetailsPageState extends State<OrderDetailsPage> {
+  final _razorpay = Razorpay();
+
+  @override
+  void initState() {
+    _getDataFromDatabase();
+    super.initState();
+  }
 
   // create order
   void createOrder() async {
@@ -96,8 +109,44 @@ class OrderDetailsPage extends StatelessWidget {
     }
   }
 
+  bool _isLoading = false;
+
+  final _cloud = FirebaseFirestore.instance;
+
+  String? name = '';
+
+  String? email = '';
+
+  String? address = '';
+
+  String? phone = '';
+
+  Future _getDataFromDatabase() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await _cloud
+        .collection("userData")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        setState(() {
+          name = snapshot.data()!["name"];
+          email = snapshot.data()!["email"];
+          address = snapshot.data()!["address"];
+          phone = snapshot.data()!["phone"];
+          _isLoading = false;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    AccountProvider data = Provider.of(context);
+    data.getUserData();
+
     final totalAmount = ModalRoute.of(context)!.settings.arguments as String?;
     return Scaffold(
       appBar: AppBar(
@@ -138,96 +187,50 @@ class OrderDetailsPage extends StatelessWidget {
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Consumer<AccountProvider>(
-                          builder: ((ctx, e, _) => Column(
-                                children: [
-                                  Row(
+                        padding: const EdgeInsets.all(15),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Deliver to:',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.black,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(
+                                        Icons.edit_location_alt_rounded))
+                              ],
+                            ),
+                            _isLoading
+                                ? loader(context)
+                                : Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        'Deliver to:',
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                                      IconButton(
-                                          onPressed: () {},
-                                          icon: const Icon(
-                                              Icons.edit_location_alt_rounded))
+                                      DeliveryDetails(
+                                        name: name!,
+                                        address: address!,
+                                        phone: phone!,
+                                      )
                                     ],
                                   ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                .67,
-                                            child: Text(
-                                              e.account!.name,
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.black,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                .80,
-                                            child: Text("e.account!.address",
-                                                style: GoogleFonts.poppins(
-                                                  color: Colors.black,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                overflow: TextOverflow.visible),
-                                          ),
-                                          Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.call_rounded,
-                                                size: 16,
-                                              ),
-                                              SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    .80,
-                                                child: Text("e.account!.phone",
-                                                    style: GoogleFonts.poppins(
-                                                      color: Colors.black,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.visible),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ))),
-                    ),
+
+                            //  data.getAccountList.map((e) {
+                            // return DeliveryDetails(
+                            //   name: e.name,
+                            //   address: e.address,
+                            //   phone: e.phone,
+                            // );
+                            //   }).toList(),
+                            // ),
+                          ],
+                        )),
                   ),
                   Card(
                     elevation: 5,
@@ -380,6 +383,68 @@ class OrderDetailsPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class DeliveryDetails extends StatelessWidget {
+  String name;
+  String address;
+  String phone;
+  DeliveryDetails(
+      {Key? key,
+      required this.name,
+      required this.address,
+      required this.phone})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width * .67,
+          child: Text(
+            name,
+            style: GoogleFonts.poppins(
+              color: Colors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * .80,
+          child: Text(address,
+              style: GoogleFonts.poppins(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.visible),
+        ),
+        Row(
+          children: [
+            const Icon(
+              Icons.call_rounded,
+              size: 16,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * .80,
+              child: Text(phone,
+                  style: GoogleFonts.poppins(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.visible),
+            ),
+          ],
+        )
+      ],
     );
   }
 }

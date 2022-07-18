@@ -239,48 +239,48 @@ class _AccountPageState extends State<AccountPage> {
                     const SizedBox(
                       height: 30,
                     ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(EditAccountPage.routeName);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 160,
-                        height: 45,
-                        decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: <Color>[
-                                  Color.fromARGB(255, 9, 50, 85),
-                                  Color.fromARGB(255, 19, 109, 182),
-                                  Colors.blue
-                                ]),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(40))),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              'Edit',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // InkWell(
+                    //   onTap: () {
+                    //     Navigator.of(context)
+                    //         .pushNamed(EditAccountPage.routeName);
+                    //   },
+                    //   child: Container(
+                    //     alignment: Alignment.center,
+                    //     width: 160,
+                    //     height: 45,
+                    //     decoration: const BoxDecoration(
+                    //         gradient: LinearGradient(
+                    //             begin: Alignment.topCenter,
+                    //             end: Alignment.bottomCenter,
+                    //             colors: <Color>[
+                    //               Color.fromARGB(255, 9, 50, 85),
+                    //               Color.fromARGB(255, 19, 109, 182),
+                    //               Colors.blue
+                    //             ]),
+                    //         borderRadius:
+                    //             BorderRadius.all(Radius.circular(40))),
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: [
+                    //         const Icon(
+                    //           Icons.edit,
+                    //           color: Colors.white,
+                    //           size: 20,
+                    //         ),
+                    //         const SizedBox(
+                    //           width: 10,
+                    //         ),
+                    //         Text(
+                    //           'Edit',
+                    //           style: GoogleFonts.poppins(
+                    //               fontSize: 14,
+                    //               fontWeight: FontWeight.w700,
+                    //               color: Colors.white),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

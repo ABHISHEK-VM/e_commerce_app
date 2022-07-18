@@ -4,6 +4,7 @@ import 'package:ecommerceapp/provider/account_provider.dart';
 import 'package:ecommerceapp/provider/products.dart';
 import 'package:ecommerceapp/screen/account_page.dart';
 import 'package:ecommerceapp/screen/inventory_page.dart';
+import 'package:ecommerceapp/screen/order_page.dart';
 import 'package:ecommerceapp/screen/sign_in_page.dart';
 import 'package:ecommerceapp/widget/reusables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -62,8 +63,6 @@ class _HomePageState extends State<HomePage> {
     Products productsdata = Provider.of(context, listen: false);
     productsdata.getInventory();
 
-    AccountProvider data = Provider.of(context, listen: false);
-    data.getData();
     setState(() {
       _isLoading = false;
     });
@@ -84,6 +83,7 @@ class _HomePageState extends State<HomePage> {
     // } else {
     //   print("Payment was unauthentic!");
     // }
+
     print("Payment Done");
   }
 
@@ -155,6 +155,10 @@ class _HomePageState extends State<HomePage> {
               title: const Text('My Orders'),
               onTap: () {
                 Navigator.pop(context);
+
+                Navigator.of(context).pushNamed(
+                  OrderPage.routeName,
+                );
               },
             ),
             const Divider(),

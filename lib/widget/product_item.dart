@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerceapp/screen/product_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -58,9 +59,24 @@ class ProductItem extends StatelessWidget {
               arguments: product.id,
             );
           },
-          child: Image.network(
-            product.imgurl,
+          child: CachedNetworkImage(
+            imageUrl: product.imgurl,
             fit: BoxFit.cover,
+            imageBuilder: (context, imageProvider) => Container(
+              height: MediaQuery.of(context).size.height * .28,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              ),
+            ),
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) => Image.asset(
+              "images/place_holder.png",
+              fit: BoxFit.cover,
+              height: MediaQuery.of(context).size.height * .28,
+            ),
+            // placeholder: (context, url) => loader(context),
           ),
         ),
       ),
