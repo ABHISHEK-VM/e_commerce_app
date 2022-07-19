@@ -203,10 +203,10 @@ class ProductDetail extends StatelessWidget {
                 height: 15,
               ),
               InkWell(
-                onTap: () {
+                onTap: () async {
                   // cart.addItem(loadedProduct.id!, loadedProduct.price,
                   //     loadedProduct.title, loadedProduct.imgurl, 1);
-                  dbHelper!
+                  await dbHelper!
                       .insert(Cart(
                     id: loadedProduct.id.toString(),
                     title: loadedProduct.title.toString(),

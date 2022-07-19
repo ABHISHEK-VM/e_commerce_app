@@ -4,6 +4,7 @@ import 'package:ecommerceapp/model/cart_model.dart';
 import 'package:ecommerceapp/provider/cartProvider.dart';
 import 'package:ecommerceapp/provider/orders.dart';
 import 'package:ecommerceapp/screen/order_details_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,13 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   DBHelper? dbHelper = DBHelper();
+
+  final userId = FirebaseAuth.instance.currentUser!.uid;
+
+  late Order _cart;
+  bool _isLoading = true;
+
+  void placeOrder() {}
 
   @override
   Widget build(BuildContext context) {
@@ -347,9 +355,27 @@ class _CartPageState extends State<CartPage> {
               ),
               InkWell(
                 onTap: () {
+                  setState(() {
+                    _isLoading = true;
+                  });
+
+                  // _cart = Order(
+                  //   id: _cart.id,
+                  //   amount: _cart.amount,
+                  //   orderItems: _cart.orderItems,
+                  //   dateTime: _cart.dateTime,
+                  // );
+
                   if (cart.counter != 0) {
                     // Provider.of<Orders>(context, listen: false)
-                    //     .addOrder(cart.getData(), cart.getTotalPrice());
+                    //     .addOrder(_cart, cart.getTotalPrice(), userId)
+                    //     .then((value) {
+                    //   if (value == null) {
+                    //     setState(() {
+                    //       _isLoading = false;
+                    //     });
+                    //   }
+                    // });
 
                     Navigator.of(context).pushNamed(
                       OrderDetailsPage.routeName,

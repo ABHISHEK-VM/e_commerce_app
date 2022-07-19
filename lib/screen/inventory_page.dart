@@ -35,6 +35,7 @@ class _InventoryPageState extends State<InventoryPage> {
   final _storage = FirebaseStorage.instance;
 
   bool _isLoading = false;
+  bool _isPageLoading = false;
 
   void _saveData() async {
     if (_formKey.currentState!.validate()) {
@@ -42,32 +43,42 @@ class _InventoryPageState extends State<InventoryPage> {
       if (_selectedFile == null) {
         displaySnackBar(text: 'Please upload an image', context: context);
       } else {
-        if (_title != null && _description != null && _price != null) {
-          UploadTask uploadTask = FirebaseStorage.instance
-              .ref()
-              .child('productImage')
-              .child(const Uuid().v1())
-              .putFile(_selectedFile!);
+        setState(() {
+          _isPageLoading = true;
+        });
+        UploadTask uploadTask = FirebaseStorage.instance
+            .ref()
+            .child('productImage')
+            .child(const Uuid().v1())
+            .putFile(_selectedFile!);
 
-          TaskSnapshot taskSnapshot = await uploadTask;
-          String downloadurl = await taskSnapshot.ref.getDownloadURL();
-          var docid = FirebaseFirestore.instance.collection("inventory").doc();
-          Map<String, dynamic> inventory = {
-            "title": _title.text,
-            "description": _description.text,
-            "imageurl": downloadurl,
-            "price": double.parse(_price.text),
-            "id": docid.id,
-          };
-          FirebaseFirestore.instance
-              .collection("inventory")
-              .add(inventory)
-              .then((value) {
-            displaySnackBar(
-                text: 'Data was saved successfully...', context: context);
-            Navigator.pop(context);
+        TaskSnapshot taskSnapshot = await uploadTask;
+        String downloadurl = await taskSnapshot.ref.getDownloadURL();
+        var docid = FirebaseFirestore.instance.collection("inventory").doc();
+
+        Map<String, dynamic> inventory = {
+          "title": _title.text,
+          "description": _description.text,
+          "imageurl": downloadurl,
+          "price": double.parse(_price.text),
+          "id": docid.id,
+        };
+
+        FirebaseFirestore.instance
+            .collection("inventory")
+            .add(inventory)
+            .then((value) {
+          setState(() {
+            _isPageLoading = false;
           });
-        }
+
+          displaySnackBar(
+            text: 'Data was saved successfully...',
+            context: context,
+          );
+
+          Navigator.pop(context);
+        });
       }
     }
   }
@@ -191,188 +202,215 @@ class _InventoryPageState extends State<InventoryPage> {
               fontWeight: FontWeight.w600, fontSize: 19, color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.all(30),
-            child: Column(
+      body: _isPageLoading
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                InkWell(
-                  borderRadius: BorderRadius.circular(12.0),
-                  onTap: _selectImageSource,
-                  child: _selectedFile != null
-                      ? Container(
-                          margin: const EdgeInsets.all(30),
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                            color: const Color(0xff7c94b6),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Image.file(
-                            _selectedFile!,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : DottedBorder(
-                          color: Colors.grey,
-                          radius: const Radius.circular(12.0),
-                          borderType: BorderType.RRect,
-                          padding: const EdgeInsets.only(
-                              left: 80, right: 80, top: 40, bottom: 40),
-                          child: Column(
-                            children: const [
-                              Icon(Icons.cloud_upload_outlined,
-                                  size: 60, color: Colors.grey),
-                              Text(
-                                'Pick an Image',
-                                style: TextStyle(color: Colors.grey),
-                              )
-                            ],
-                          ),
-                        ),
-                ),
+                Image.asset("images/saving_data.png", height: 250),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.035,
+                  height: 30,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                loader(context),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Your Data is being saved...',
+                  style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87),
+                )
+              ],
+            )
+          : SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(30),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Title',
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(12.0),
+                        onTap: _selectImageSource,
+                        child: _selectedFile != null
+                            ? Container(
+                                margin: const EdgeInsets.all(30),
+                                clipBehavior: Clip.antiAlias,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff7c94b6),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Image.file(
+                                  _selectedFile!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : DottedBorder(
+                                color: Colors.grey,
+                                radius: const Radius.circular(12.0),
+                                borderType: BorderType.RRect,
+                                padding: const EdgeInsets.only(
+                                    left: 80, right: 80, top: 40, bottom: 40),
+                                child: Column(
+                                  children: const [
+                                    Icon(Icons.cloud_upload_outlined,
+                                        size: 60, color: Colors.grey),
+                                    Text(
+                                      'Pick an Image',
+                                      style: TextStyle(color: Colors.grey),
+                                    )
+                                  ],
+                                ),
+                              ),
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.015,
+                        height: MediaQuery.of(context).size.height * 0.035,
                       ),
-                      TextFormField(
-                        controller: _title,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(15.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Title',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.015,
+                            ),
+                            TextFormField(
+                              controller: _title,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(15.0),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                              ),
+                              validator: (val) {
+                                if (val!.trim().length < 2) {
+                                  return 'Enter a valid Title';
+                                } else {
+                                  return null;
+                                }
+                              },
+                            ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.015,
+                            ),
+                            Text(
+                              'Description',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.015,
+                            ),
+                            TextFormField(
+                              controller: _description,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(15.0),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                              ),
+                              validator: (val) {
+                                if (val!.trim().length < 2) {
+                                  return 'Tell something about the product';
+                                } else {
+                                  return null;
+                                }
+                              },
+                            ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.015,
+                            ),
+                            Text(
+                              'Price',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.015,
+                            ),
+                            TextFormField(
+                              controller: _price,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(15.0),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                              ),
+                              validator: (val) {
+                                if (val!.trim().isEmpty) {
+                                  return 'Enter an Amount';
+                                } else {
+                                  return null;
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.035,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          _saveData();
+                          // _title.clear();
+                          // _description.clear();
+
+                          // _price.clear();
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: <Color>[
+                                    Color.fromARGB(255, 9, 50, 85),
+                                    Color.fromARGB(255, 19, 109, 182),
+                                    Colors.blue
+                                  ]),
+
+                              // border: Border.all(
+                              //     // color: Colors.amberAccent,
+                              //     ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(40))),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 56),
+                          child: Text(
+                            'Save',
+                            style: GoogleFonts.poppins(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white),
                           ),
                         ),
-                        validator: (val) {
-                          if (val!.trim().length < 2) {
-                            return 'Enter a valid Title';
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.015,
-                      ),
-                      Text(
-                        'Description',
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.015,
-                      ),
-                      TextFormField(
-                        controller: _description,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(15.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                        ),
-                        validator: (val) {
-                          if (val!.trim().length < 2) {
-                            return 'Tell something about the product';
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.015,
-                      ),
-                      Text(
-                        'Price',
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.015,
-                      ),
-                      TextFormField(
-                        controller: _price,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(15.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                        ),
-                        validator: (val) {
-                          if (val!.trim().isEmpty) {
-                            return 'Enter an Amount';
-                          } else {
-                            return null;
-                          }
-                        },
                       ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.035,
-                ),
-                InkWell(
-                  onTap: () {
-                    _saveData();
-                    // _title.clear();
-                    // _description.clear();
-
-                    // _price.clear();
-                  },
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: <Color>[
-                              Color.fromARGB(255, 9, 50, 85),
-                              Color.fromARGB(255, 19, 109, 182),
-                              Colors.blue
-                            ]),
-
-                        // border: Border.all(
-                        //     // color: Colors.amberAccent,
-                        //     ),
-                        borderRadius: BorderRadius.all(Radius.circular(40))),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 56),
-                    child: Text(
-                      'Save',
-                      style: GoogleFonts.poppins(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }
