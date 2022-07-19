@@ -60,7 +60,7 @@ void main() async {
       ),
       home: AnimatedSplashScreen(
         duration: 4,
-        splashIconSize: 200,
+        splashIconSize: 240,
         // animationDuration: Duration(seconds: 1),
         splash: 'images/logo.png',
         nextScreen: email == null ? const SignInScreen() : HomePage(),
